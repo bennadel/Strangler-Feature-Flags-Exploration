@@ -1,0 +1,9 @@
+{
+    "app":{
+        "cfengine":"lucee"
+    },
+    "name":"strangler",
+    "jvm":{
+        "args":"-Dlucee.preserve.case=true"
+    }
+}
