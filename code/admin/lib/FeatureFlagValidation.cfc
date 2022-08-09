@@ -1,3 +1,10 @@
+/**
+* NOTE: I do NOT LOVE the names of the methods in this component. A feature flag is
+* represented by a complex data structure that includes arrays and nested structures. I
+* needed to come up with names of methods that validate specific branches of this object
+* complex object graph. I didn't have a nice way to do this; so, I just brute-forced it by
+* using names that reflected the PATH of the target value within the overall object graph.
+*/
 component
 	output = false
 	hint = "I provide validation methods for the feature flag inputs."
@@ -347,8 +354,6 @@ component
 
 			}
 		);
-
-		// TODO: Can I just return a mapping of the function call?
 
 		return( tests );
 
