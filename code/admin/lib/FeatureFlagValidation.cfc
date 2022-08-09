@@ -6,7 +6,9 @@ component
 	/**
 	* I test the given description.
 	*/
-	public void function testDescription( required string description ) {
+	public string function testDescription( required string description ) {
+
+		description = canonicalizeInput( description );
 
 		if ( description.len() > 300 ) {
 
@@ -21,13 +23,15 @@ component
 
 		}
 
+		return( description );
+
 	}
 
 
 	/**
 	* I test the given fall-through variantRef.
 	*/
-	public void function testFallthroughVariantRef(
+	public numeric function testFallthroughVariantRef(
 		required array variants,
 		required numeric fallthroughVariantRef
 		) {
@@ -45,13 +49,27 @@ component
 
 		}
 
+		return( val( fallthroughVariantRef ) );
+
+	}
+
+
+	/**
+	* I test the given enabled flag.
+	*/
+	public boolean function testIsEnabled( required boolean isEnabled ) {
+
+		return( !! isEnabled );
+
 	}
 
 
 	/**
 	* I test the given key.
 	*/
-	public void function testKey( required string key ) {
+	public string function testKey( required string key ) {
+
+		key = canonicalizeInput( key );
 
 		if ( ! key.len() ) {
 
@@ -75,28 +93,155 @@ component
 
 		}
 
+		return( key );
+
 	}
 
 
 	/**
-	* I test the given multi-rollout against the given variants. 
+	* I test the given name.
 	*/
-	public void function testMultiRollout(
+	public string function testName( required string name ) {
+
+		name = canonicalizeInput( name );
+
+		if ( ! name.len() ) {
+
+			throw(
+				type = "FeatureFlag.Name.Empty",
+				message = "FeatureFlag name cannot be empty."
+			);
+
+		}
+
+		if ( name.len() > 50 ) {
+
+			throw(
+				type = "FeatureFlag.Name.TooLong",
+				message = "FeatureFlag name is too long.",
+				extendedInfo = serializeJson({
+					value: name.len(),
+					maxLength: 50
+				})
+			);
+
+		}
+
+		return( name );
+
+	}
+
+
+	/**
+	* I test the given rules against the given variants.
+	*/
+	public array function testRules(
+		required array variants,
+		required array rules
+		) {
+
+		rules = rules.map(
+			( rule ) => {
+
+				return( testRulesX( variants, rule ) );
+
+			}
+		);
+
+		return( rules );
+
+	}
+
+
+	/**
+	* I test the given rule against the given variants.
+	*/
+	public struct function testRulesX(
+		required array variants,
+		required struct rule
+		) {
+
+		ensureProperty( "FeatureFlag.Rule", rule, "tests", "array" );
+		ensureProperty( "FeatureFlag.Rule", rule, "rollout", "struct" );
+
+		return([
+			tests: testRulesXTests( rule.tests ),
+			rollout: testRulesXRollout( variants, rule.rollout )
+		]);
+
+	}
+
+
+
+
+
+	/**
+	* I test the given rollout against the given variants.
+	*/
+	public struct function testRulesXRollout(
+		required array variants,
+		required struct rollout
+		) {
+
+		ensureProperty( "FeatureFlag.Rule.Rollout", rollout, "type", "string" );
+
+		switch ( rollout.type ) {
+			case "Multi":
+				return( testRulesXRolloutAsMulti( variants, rollout ) );
+			break;
+			case "Single":
+				return( testRulesXRolloutAsSingle( variants, rollout ) );
+			break;
+			default:
+				throw(
+					type = "FeatureFlag.Rule.Rollout.Type.NotSupported",
+					message = "FeatureFlag rollout type is not supported.",
+					extendedInfo = serializeJson({
+						value: rollout.type
+					})
+				);
+			break;
+		}
+
+	}
+
+
+	/**
+	* I test the given multi-rollout against the given variants.
+	*/
+	public struct function testRulesXRolloutAsMulti(
 		required array variants,
 		required struct rollout
 		) {
 
 		ensureProperty( "FeatureFlag.Rule.Rollout", rollout, "distribution", "array" );
 
+		return([
+			type: "Multi",
+			distribution: testRulesXRolloutAsMultiDistribution( variants, rollout.distribution )
+		]);
+
+	}
+
+
+	/**
+	* I test the given multi-rollout distribution against the given variants.
+	*/
+	public array function testRulesXRolloutAsMultiDistribution(
+		required array variants,
+		required array distribution
+		) {
+
 		var percentTotal = 0;
+		var distribution = distribution.map(
+			( portion ) => {
 
-		for ( var portion in rollout.distribution ) {
+				percentTotal += portion.percent;
 
-			testMultiRolloutPortion( variants, portion );
+				return( testRulesXRolloutAsMultiDistributionX( variants, portion ) );
 
-			percentTotal += portion.percent;
-
-		}
+			}
+		);
 
 		if ( percentTotal != 100 ) {
 
@@ -110,13 +255,15 @@ component
 
 		}
 
+		return( distribution );
+
 	}
 
 
 	/**
-	* I test the given multi-rollout portion against the given variants. 
+	* I test the given multi-rollout portion against the given variants.
 	*/
-	public void function testMultiRolloutPortion(
+	public struct function testRulesXRolloutAsMultiDistributionX(
 		required array variants,
 		required struct portion
 		) {
@@ -149,108 +296,18 @@ component
 
 		}
 
-	}
-
-
-	/**
-	* I test the given name.
-	*/
-	public void function testName( required string name ) {
-
-		if ( ! name.len() ) {
-
-			throw(
-				type = "FeatureFlag.Name.Empty",
-				message = "FeatureFlag name cannot be empty."
-			);
-
-		}
-
-		if ( name.len() > 50 ) {
-
-			throw(
-				type = "FeatureFlag.Name.TooLong",
-				message = "FeatureFlag name is too long.",
-				extendedInfo = serializeJson({
-					value: name.len(),
-					maxLength: 50
-				})
-			);
-
-		}
+		return([
+			variantRef: val( portion.variantRef ),
+			percent: val( portion.percent )
+		]);
 
 	}
 
 
 	/**
-	* I test the given rollout against the given variants. 
+	* I test the given single-rollout against the given variants.
 	*/
-	public void function testRollout(
-		required array variants,
-		required struct rollout
-		) {
-
-		ensureProperty( "FeatureFlag.Rule.Rollout", rollout, "type", "string" );
-
-		switch ( rollout.type ) {
-			case "Multi":
-				testMultiRollout( variants, rollout );
-			break;
-			case "Single":
-				testSingleRollout( variants, rollout );
-			break;
-			default:
-				throw(
-					type = "FeatureFlag.Rule.Rollout.Type.NotSupported",
-					message = "FeatureFlag rollout type is not supported.",
-					extendedInfo = serializeJson({
-						value: rollout.type
-					})
-				);
-			break;
-		}
-
-	}
-
-
-	/**
-	* I test the given rule against the given variants.
-	*/
-	public void function testRule(
-		required array variants,
-		required struct rule
-		) {
-
-		ensureProperty( "FeatureFlag.Rule", rule, "tests", "array" );
-		ensureProperty( "FeatureFlag.Rule", rule, "rollout", "struct" );
-
-		testTests( rule.tests );
-		testRollout( variants, rule.rollout );
-
-	}
-
-
-	/**
-	* I test the given rules against the given variants.
-	*/
-	public void function testRules(
-		required array variants,
-		required array rules
-		) {
-
-		for ( var rule in rules ) {
-
-			testRule( variants, rule );
-
-		}
-
-	}
-
-
-	/**
-	* I test the given single-rollout against the given variants. 
-	*/
-	public void function testSingleRollout(
+	public struct function testRulesXRolloutAsSingle(
 		required array variants,
 		required struct rollout
 		) {
@@ -270,22 +327,47 @@ component
 
 		}
 
+		return([
+			type: "Single",
+			variantRef: val( rollout.variantRef )
+		]);
+
+	}
+
+
+	/**
+	* I test the given tests.
+	*/
+	public array function testRulesXTests( required array tests ) {
+
+		tests = tests.map(
+			( test ) => {
+
+				return( testRulesXTestsX( test ) );
+
+			}
+		);
+
+		// TODO: Can I just return a mapping of the function call?
+
+		return( tests );
+
 	}
 
 
 	/**
 	* I test the given test.
 	*/
-	public void function testTest( required struct test ) {
+	public struct function testRulesXTestsX( required struct test ) {
 
 		ensureProperty( "FeatureFlag.Rule.Test", test, "type", "string" );
 
 		switch ( test.type ) {
 			case "UserKey":
-				testUserKeyTest( test );
+				return( testRulesXTestsXasUserKey( test ) );
 			break;
 			case "UserProperty":
-				testUserPropertyTest( test );
+				return( testRulesXTestsXasUserProperty( test ) );
 			break;
 			default:
 				throw(
@@ -302,119 +384,16 @@ component
 
 
 	/**
-	* I test the given operation.
-	*/ 
-	public void function testTestOperation( required struct operation ) {
-
-		ensureProperty( "FeatureFlag.Rule.Test.Operation", operation, "operator", "string" );
-		ensureProperty( "FeatureFlag.Rule.Test.Operation", operation, "values", "array" );
-
-		testTestOperator( operation.operator );
-
-		for ( var value in operation.values ) {
-
-			if ( ! isSimpleValue( value ) ) {
-
-				throw(
-					type = "FeatureFlag.Rule.Test.Operation.Value.NotSupported",
-					message = "FeatureFlag operands must be simple values.",
-					extendedInfo = serializeJson({
-						operator: operation.operator
-					})
-				);
-
-			}
-
-		}
-
-	}
-
-
-	/**
-	* I test the given operator.
-	*/
-	public void function testTestOperator( required string operator ) {
-
-		switch ( operator ) {
-			case "Contains":
-			case "EndsWith":
-			case "GreaterThan":
-			case "LessThan":
-			case "MatchesRegex":
-			case "NotContains":
-			case "NotEndsWith":
-			case "NotMatchesRegex":
-			case "NotOneOf":
-			case "NotStartsWith":
-			case "OneOf":
-			case "StartsWith":
-				return;
-			break;
-			default:
-				throw(
-					type = "FeatureFlag.Rule.Test.Operation.Operator.NotSupported",
-					message = "FeatureFlag test operator not supported.",
-					extendedInfo = serializeJson({
-						value: operator,
-						expects: [ "Contains", "EndsWith", "GreaterThan", "LessThan", "MatchesRegex", "NotContains", "NotEndsWith", "NotMatchesRegex", "NotOneOf", "NotStartsWith", "OneOf", "StartsWith" ]
-					})
-
-				);
-			break;
-		}
-
-	}
-
-
-	/**
-	* I test the given tests.
-	*/
-	public void function testTests( required array tests ) {
-
-		for ( var test in tests ) {
-
-			testTest( test );
-
-		}
-
-	}
-
-
-	/**
-	* I test the given variant type.
-	*/
-	public void function testType( required string type ) {
-
-		switch ( type ) {
-			case "Any":
-			case "Boolean":
-			case "Numeric":
-			case "String":
-				return;
-			break;
-			default:
-				throw(
-					type = "FeatureFlag.Type.NotSupported",
-					message = "FeatureFlag type is not supported.",
-					extendedInfo = serializeJson({
-						value: type,
-						expects: [ "Boolean", "Numeric", "String", "Any" ]
-					})
-				);
-			break;
-		}
-
-	}
-
-
-	/**
 	* I test the given user-key test.
 	*/
-	public void function testUserKeyTest( required struct test ) {
+	public struct function testRulesXTestsXasUserKey( required struct test ) {
 
 		ensureProperty( "FeatureFlag.Rule.Test", test, "operation", "struct" );
 
-		testTestOperation( test.operation );
+		return([
+			type: "UserKey",
+			operation: testRulesXTestsXOperation( test.operation )
+		]);
 
 	}
 
@@ -422,12 +401,28 @@ component
 	/**
 	* I test the given user-property test.
 	*/
-	public void function testUserPropertyTest( required struct test ) {
+	public struct function testRulesXTestsXasUserProperty( required struct test ) {
 
 		ensureProperty( "FeatureFlag.Rule.Test", test, "userProperty", "string" );
 		ensureProperty( "FeatureFlag.Rule.Test", test, "operation", "struct" );
 
-		if ( ! test.userProperty.len() ) {
+		return([
+			type: "UserProperty",
+			userProperty: testRulesXTestsXasUserPropertyUserProperty( test.userProperty ),
+			operation: testRulesXTestsXOperation( test.operation )
+		]);
+
+	}
+
+
+	/**
+	* I test the given user property.
+	*/
+	public string function testRulesXTestsXasUserPropertyUserProperty( required string userProperty ) {
+
+		userProperty = canonicalizeInput( userProperty );
+
+		if ( ! userProperty.len() ) {
 
 			throw(
 				type = "FeatureFlag.Rule.Test.UserProperty.Empty",
@@ -436,7 +431,164 @@ component
 
 		}
 
-		testTestOperation( test.operation );
+		if ( userProperty.len() > 50 ) {
+
+			throw(
+				type = "FeatureFlag.Rule.Test.UserProperty.TooLong",
+				message = "FeatureFlag user property too long.",
+				extendedInfo = serializeJson({
+					value: userProperty.len(),
+					maxLength: 50
+				})
+			);
+
+		}
+
+		return( userProperty );
+
+	}
+
+
+	/**
+	* I test the given operation.
+	*/ 
+	public struct function testRulesXTestsXOperation( required struct operation ) {
+
+		ensureProperty( "FeatureFlag.Rule.Test.Operation", operation, "operator", "string" );
+		ensureProperty( "FeatureFlag.Rule.Test.Operation", operation, "values", "array" );
+
+		return([
+			operator: testRulesXTestsXOperationOperator( operation.operator ),
+			values: testRulesXTestsXOperationValues( operation.values )
+		]);
+
+	}
+
+
+	/**
+	* I test the given operation operator.
+	*/
+	public string function testRulesXTestsXOperationOperator( required string operator ) {
+
+		operator = canonicalizeInput( operator );
+
+		var validValues = [
+			"Contains",
+			"EndsWith",
+			"GreaterThan",
+			"LessThan",
+			"MatchesRegex",
+			"NotContains",
+			"NotEndsWith",
+			"NotMatchesRegex",
+			"NotOneOf",
+			"NotStartsWith",
+			"OneOf",
+			"StartsWith"
+		];
+
+		for ( var value in validValues ) {
+
+			if ( value == operator ) {
+
+				// NOTE: We are returning the internally-defined value in order to ensure
+				// the appropriate character-casing on the persisted value.
+				return( value );
+
+			}
+
+		}
+
+		throw(
+			type = "FeatureFlag.Rule.Test.Operation.Operator.NotSupported",
+			message = "FeatureFlag test operator not supported.",
+			extendedInfo = serializeJson({
+				value: operator,
+				expects: validValues
+			})
+
+		);
+
+	}
+
+
+	/**
+	* I test the given operation values.
+	*/
+	public array function testRulesXTestsXOperationValues( required array values ) {
+
+		values = values.map(
+			( value ) => {
+
+				if ( ! isSimpleValue( value ) ) {
+
+					throw(
+						type = "FeatureFlag.Rule.Test.Operation.Value.NotSupported",
+						message = "FeatureFlag operands must be simple values."
+					);
+
+				}
+
+				value = canonicalizeInput( value );
+
+				return( value );
+
+			}
+		);
+
+		return( values );
+
+	}
+
+
+	/**
+	* I test the given variant type.
+	*/
+	public string function testType( required string type ) {
+
+		var validValues = [ "Any", "Boolean", "Numeric", "String" ];
+
+		for ( var value in validValues ) {
+
+			if ( value == type ) {
+
+				// NOTE: We are returning the internally-defined value in order to ensure
+				// the appropriate character-casing on the persisted value.
+				return( value );
+
+			}
+
+		}
+
+		throw(
+			type = "FeatureFlag.Type.NotSupported",
+			message = "FeatureFlag type is not supported.",
+			extendedInfo = serializeJson({
+				value: type,
+				expects: validValues
+			})
+		);
+
+	}
+
+
+	/**
+	* I test the given variants against the given type.
+	*/
+	public array function testVariants(
+		required string type,
+		required array variants
+		) {
+
+		variants = variants.map(
+			( variant ) => {
+
+				return( testVariantsX( type, variant ) );
+
+			}
+		);
+
+		return( variants );
 
 	}
 
@@ -444,19 +596,32 @@ component
 	/**
 	* I test the given variant against the given type.
 	*/
-	public void function testVariant(
+	public any function testVariantsX(
 		required string type,
 		required any variant
 		) {
 
-		// If the type is "any", then the value has to be serializable. The only way to
-		// verify this is to try and serialize the value and see if we get an error.
-		if ( type == "Any" ) {
+		if ( ( type == "Boolean" ) && isBoolean( variant ) ) {
 
+			return( !! variant );
+
+		} else if ( ( type == "Numeric" ) && isNumeric( variant ) ) {
+
+			return( val( variant ) );
+
+		} else if ( ( type == "String" ) && isValid( "string", variant ) ) {
+
+			return( toString( variant ) );
+
+		} else if ( type == "Any" ) {
+
+			// If the type is "any", then the value has to be serializable. The only way
+			// to verify this is to try and serialize the variant and see if we get an
+			// error.
 			try {
 
 				serializeJson( variant );
-				return;
+				return( variant );
 
 			} catch ( any error ) {
 
@@ -466,22 +631,7 @@ component
 				);
 
 			}
-			
-		}
-
-		// CAUTION: Since ColdFusion auto-casts values on-the-fly, the following checks
-		// really only determine if the given variant can be cast to the given type - it
-		// doesn't really ensure that the variant is the correct NATIVE type. As such,
-		// variant values should be explicitly cast to the correct NATIVE type during data
-		// persistence.
-		if (
-			( ( type == "Boolean" ) && isBoolean( variant ) ) ||
-			( ( type == "Numeric" ) && isNumeric( variant ) ) ||
-			( ( type == "String" ) && isValid( "string", variant ) )
-			) {
-
-			return;
-
+				
 		}
 
 		var variantValue = isSimpleValue( variant )
@@ -497,23 +647,6 @@ component
 				expects: type
 			})
 		);
-
-	}
-
-
-	/**
-	* I test the given variants against the given type.
-	*/
-	public void function testVariants(
-		required string type,
-		required array variants
-		) {
-
-		for ( var variant in variants ) {
-
-			testVariant( type, variant );
-
-		}
 
 	}
 
@@ -538,6 +671,29 @@ component
 	// ---
 
 	/**
+	* I return the canonicalized version of the given input.
+	*/
+	private string function canonicalizeInput( required string input ) {
+
+		try {
+
+			// NOTE: In earlier versions of Lucee, canonicalizing an empty string would
+			// return NULL. As such, using Elvis operator to always return a string.
+			return( canonicalize( input.trim(), true, true ) ?: "" );
+
+		} catch ( any error ) {
+
+			throw(
+				type = "FeatureFlag.MaliciousInput",
+				message = "FeatureFlag contains suspicious encoding."
+			);
+
+		}
+
+	}
+
+
+	/**
 	* I use the isValid() built-in function to ensure that the given property exists and
 	* is of the expected type.
 	*/
@@ -548,7 +704,7 @@ component
 		required string propertyType
 		) {
 
-		if ( ! isKeyInStructWithCase( container, propertyName ) ) {
+		if ( ! container.keyExists( propertyName ) ) {
 
 			throw(
 				type = "#containerPath#.#ucfirst( propertyName )#.Missing",
@@ -572,42 +728,6 @@ component
 			);
 
 		}
-
-	}
-
-
-	/**
-	* I determine if the given key exists in the given struct using the given key-casing.
-	*/
-	private boolean function isKeyInStructWithCase(
-		required struct targetContrainer,
-		required string targetKey
-		) {
-
-		if ( ! targetContrainer.keyExists( targetKey ) ) {
-
-			return( false );
-
-		}
-
-		// Since ColdFusion structs are inherently case-INSENSITIVE, just because the key
-		// exists is in the struct, it doesn't mean that it is the "right key". As such,
-		// we have to iterate over the struct keys and check them by-case.
-		// --
-		// NOTE: In Adobe ColdFusion, we could have used the structGetMetaData() function
-		// for this. But, at this time, Lucee does not support this method. As such, we
-		// have to brute force-it.
-		for ( var key in targetContrainer.keyArray() ) {
-
-			if ( ! compare( key, targetKey ) ) {
-
-				return( true );
-
-			}
-
-		}
-
-		return( false );
 
 	}
 

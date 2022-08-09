@@ -41,7 +41,7 @@ component
 			.setValidation( application.featureFlagValidation )
 		;
 
-		ensureDemoFlags();
+		ensureDemoFlags( dataFilepath );
 
 	}
 
@@ -66,7 +66,16 @@ component
 	/**
 	* I create a base set of feature flags for the demo.
 	*/
-	private void function ensureDemoFlags() {
+	private void function ensureDemoFlags( required string dataFilepath ) {
+
+		// NOTE: Since the feature flag data is not being committed to git, we need to
+		// make sure the empty file exists before we start to interact with the
+		// application.
+		if ( ! fileExists( dataFilepath ) ) {
+
+			fileWriteLine( dataFilepath, serializeJson( {} ) );
+
+		}
 
 		var index = application.featureFlagService.getFeatureFlagsIndex();
 

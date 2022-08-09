@@ -92,15 +92,23 @@ component
 		required boolean isEnabled
 		) {
 
-		validation.testKey( key );
-		validation.testName( name );
-		validation.testDescription( description );
-		validation.testType( type );
-		validation.testVariants( type, variants );
-		validation.testRules( variants, rules );
-		validation.testFallthroughVariantRef( variants, fallthroughVariantRef );
-
-		gateway.saveFeatureFlag( argumentCollection = arguments );
+		// LEAKY ABSTRACTION: Since we are currently storing the feature flag data in a
+		// flat JSON file, there's no underlying mechanism that enforces data types and
+		// value coercion at persistence time. As such, I'm jumping through a few more
+		// hoops here to both VALIDATE and TRANSFORM the USER-PROVIDED inputs in order to
+		// make sure that everything is of the expected type and interface. Normally, my
+		// "test" functions wouldn't return data; but, in this case, they are returning
+		// the sanitize data, prepared for persistence.
+		gateway.saveFeatureFlag(
+			key = validation.testKey( key ),
+			name = validation.testName( name ),
+			description = validation.testDescription( description ),
+			type = validation.testType( type ),
+			variants = validation.testVariants( type, variants ),
+			rules = validation.testRules( variants, rules ),
+			fallthroughVariantRef = validation.testFallthroughVariantRef( variants, fallthroughVariantRef ),
+			isEnabled = validation.testIsEnabled( isEnabled )
+		);
 
 	}
 
@@ -114,12 +122,16 @@ component
 		required string description
 		) {
 
-		validation.testName( name );
-		validation.testDescription( description );
-
 		var featureFlag = getFeatureFlag( key );
-		featureFlag.name = name;
-		featureFlag.description = description;
+		// LEAKY ABSTRACTION: Since we are currently storing the feature flag data in a
+		// flat JSON file, there's no underlying mechanism that enforces data types and
+		// value coercion at persistence time. As such, I'm jumping through a few more
+		// hoops here to both VALIDATE and TRANSFORM the USER-PROVIDED inputs in order to
+		// make sure that everything is of the expected type and interface. Normally, my
+		// "test" functions wouldn't return data; but, in this case, they are returning
+		// the sanitize data, prepared for persistence.
+		featureFlag.name = validation.testName( name );
+		featureFlag.description = validation.testDescription( description );
 
 		gateway.saveFeatureFlag( argumentCollection = featureFlag );
 
@@ -137,13 +149,16 @@ component
 		) {
 
 		var featureFlag = getFeatureFlag( key );
-
-		validation.testRules( featureFlag.variants, rules );
-		validation.testFallthroughVariantRef( featureFlag.variants, fallthroughVariantRef );
-
-		featureFlag.rules = rules;
-		featureFlag.fallthroughVariantRef = fallthroughVariantRef;
-		featureFlag.isEnabled = isEnabled;
+		// LEAKY ABSTRACTION: Since we are currently storing the feature flag data in a
+		// flat JSON file, there's no underlying mechanism that enforces data types and
+		// value coercion at persistence time. As such, I'm jumping through a few more
+		// hoops here to both VALIDATE and TRANSFORM the USER-PROVIDED inputs in order to
+		// make sure that everything is of the expected type and interface. Normally, my
+		// "test" functions wouldn't return data; but, in this case, they are returning
+		// the sanitize data, prepared for persistence.
+		featureFlag.rules = validation.testRules( featureFlag.variants, rules );
+		featureFlag.fallthroughVariantRef = validation.testFallthroughVariantRef( featureFlag.variants, fallthroughVariantRef );
+		featureFlag.isEnabled = validation.testIsEnabled( isEnabled );
 
 		gateway.saveFeatureFlag( argumentCollection = featureFlag );
 

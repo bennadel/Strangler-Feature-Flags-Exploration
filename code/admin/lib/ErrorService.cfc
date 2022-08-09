@@ -81,6 +81,12 @@ component
 		// the following switch statement. We only need to include the ones that are
 		// "possible" for the user to produce through normal interactions. The rest of the
 		// errors just need to be logged for the development team (ie, Me).
+		// --
+		// In our demo, since feature flag data is only being provided via FORM POSTs, we
+		// know that only some of the values are user-provided. As such, we can limit the
+		// scope of error translations. If we were to open up an API end-point, where a
+		// user could post a JSON payload, then we might have to come back in and
+		// translate a greater variety of error messages.
 		switch ( error.type ) {
 			case "FeatureFlag.Description.TooLong":
 				return(
@@ -103,6 +109,14 @@ component
 					as422({
 						type: error.type,
 						message: "Please provide a shorter key for your feature flag. Keys can be up to #metadata.maxLength#-characters long."
+					})
+				);
+			break;
+			case "FeatureFlag.MaliciousInput":
+				return(
+					as400({
+						type: error.type,
+						message: "Your input contains suspicious, potentially malicious encodings."
 					})
 				);
 			break;
@@ -142,6 +156,14 @@ component
 					as422({
 						type: error.type,
 						message: "Please enter a property for your user-property test."
+					})
+				);
+			break;
+			case "FeatureFlag.Rule.Test.UserProperty.TooLong":
+				return(
+					as422({
+						type: error.type,
+						message: "Please use a shorter property for your user-property test. Property names can be up to #metadata.maxLength#-characters long."
 					})
 				);
 			break;
