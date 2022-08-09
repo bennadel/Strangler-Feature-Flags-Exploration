@@ -680,11 +680,25 @@ component
 	*/
 	private string function canonicalizeInput( required string input ) {
 
+		input = input.trim();
+
 		try {
 
 			// NOTE: In earlier versions of Lucee, canonicalizing an empty string would
-			// return NULL. As such, using Elvis operator to always return a string.
-			return( canonicalize( input.trim(), true, true ) ?: "" );
+			// return NULL. As such, I'm using Elvis operator to always return a string.
+			var cleanedInput = ( canonicalize( input true, true ) ?: "" );
+
+			// We don't just want to canonicalize the input, we want to block data that
+			// changes due to the canonicalization process. This way, we can inform the
+			// user about the issue rather than silently storing a value that differs from
+			// the one that the user provided.
+			if ( input != cleanedInput ) {
+
+				throw( type = "InputMismatch" );
+
+			}
+
+			return( cleanedInput );
 
 		} catch ( any error ) {
 

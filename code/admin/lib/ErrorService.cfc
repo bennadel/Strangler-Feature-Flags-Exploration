@@ -116,7 +116,7 @@ component
 				return(
 					as400({
 						type: error.type,
-						message: "Your input contains suspicious, potentially malicious encodings."
+						message: "Your input contains suspicious, potentially malicious encodings. Check for usage of special characters like [&] and [%]."
 					})
 				);
 			break;
