@@ -1,5 +1,8 @@
 <cfscript>
 
+	// Setup the default request parameters.
+	param name="url.dataChanged" type="boolean" default=false;
+
 	featureFlags = application.featureFlagService.getFeatureFlags();
 
 </cfscript>
@@ -61,6 +64,19 @@
 
 	</tbody>
 	</table>
+
+	<!---
+		When the admin has changed the feature flag data, we want to post a message over
+		to the DEMO page letting it know so that it can automatically refresh and show the
+		most up-to-date feature flag targeting results.
+	--->
+	<cfif url.dataChanged>
+		<script type="text/javascript">
+
+			window.top.postMessage( "adminReloaded", window.top.location.origin );
+
+		</script>
+	</cfif>
 
 </cfoutput>
 </cfmodule>

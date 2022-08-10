@@ -4,11 +4,17 @@ component
 	{
 
 	// Define the application settings.
-	this.name = "StranglerDemo";
-	this.applicationTimeout = createTimeSpan( 0, 1, 0, 0 );
+	this.name = "StranglerDemoPublic";
+	this.applicationTimeout = createTimeSpan( 1, 0, 0, 0 );
 	this.sessionManagement = false;
 	this.serialization = {
 		preserveCaseForStructKey: true
+	};
+
+	this.directory = getDirectoryFromPath( getCurrentTemplatePath() );
+	this.mappings = {
+		"/data": ( this.directory & "data" ),
+		"/lib": ( this.directory & "lib" )
 	};
 
 	// ---
@@ -20,9 +26,7 @@ component
 	*/
 	public void function onApplicationStart() {
 
-		var thisDirectory = ( getDirectoryFromPath( getCurrentTemplatePath() ) );
-		var dataDirectory = ( thisDirectory & "data/" )
-		var dataFilepath = ( dataDirectory & "features.json" );
+		var dataFilepath = expandPath( "/data/features.json" );
 
 		application.strangler = new lib.Strangler()
 			.setLoader( new lib.SyncLoader( dataFilepath ) )
@@ -36,11 +40,24 @@ component
 	*/
 	public void function onRequestStart() {
 
-		if ( url.keyExists( "init" ) ) {
+		if ( shouldResetApplication() ) {
 
 			this.onApplicationStart();
 
 		}
+
+	}
+
+	// ---
+	// PRIVATE METHODS.
+	// ---
+
+	/**
+	* I determine if the application should be reset using a URL flag.
+	*/
+	private boolean function shouldResetApplication() {
+
+		return( url?.init == "strangler" );
 
 	}
 

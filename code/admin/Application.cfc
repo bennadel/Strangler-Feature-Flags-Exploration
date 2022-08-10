@@ -3,8 +3,8 @@ component
 	hint = "I define the application settings and event handlers."
 	{
 
-	// Define application settings.
-	this.name = "StranglerAdmin";
+	// Define the application settings.
+	this.name = "StranglerDemoAdmin";
 	this.applicationTimeout = createTimeSpan( 1, 0, 0, 0 );
 	this.sessionManagement = false;
 	this.serialization = {
@@ -13,6 +13,7 @@ component
 
 	this.directory = getDirectoryFromPath( getCurrentTemplatePath() );
 	this.mappings = {
+		"/data": ( this.directory & "../data" ),
 		"/lib": ( this.directory & "lib" ),
 		"/templates": ( this.directory & "templates" ),
 		"/vendor": ( this.directory & "vendor" )
@@ -27,9 +28,7 @@ component
 	*/
 	public void function onApplicationStart() {
 
-		var thisDirectory = ( getDirectoryFromPath( getCurrentTemplatePath() ) );
-		var dataDirectory = ( thisDirectory & "../data/" )
-		var dataFilepath = ( dataDirectory & "features.json" );
+		var dataFilepath = expandPath( "/data/features.json" );
 
 		application.errorService = new lib.ErrorService();
 		application.featureFlagGateway = new lib.FeatureFlagGateway()

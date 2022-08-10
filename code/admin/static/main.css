@@ -32,7 +32,8 @@ a:visited {
 	color:  #e0005a ;
 }
 a:hover {
-	font-weight: 700 ;
+	background-color: #e0005a ;
+	color: #ffffff ;
 }
 
 table {

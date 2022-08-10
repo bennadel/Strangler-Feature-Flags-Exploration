@@ -25,7 +25,7 @@
 
 			application.featureFlagService.deleteFeatureFlag( url.key );
 
-			location( url = "/admin/index.cfm", addToken = false );
+			location( url = "/admin/index.cfm?dataChanged=true", addToken = false );
 
 		} catch ( any error ) {
 

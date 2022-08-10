@@ -68,7 +68,7 @@
 				);
 
 				location(
-					url = "/admin/edit-targeting/index.cfm?key=#encodeForUrl( preparedData.key )#",
+					url = "/admin/edit-targeting/index.cfm?key=#encodeForUrl( preparedData.key )#&dataChanged=true",
 					addToken = false
 				);
 

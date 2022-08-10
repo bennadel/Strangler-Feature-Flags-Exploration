@@ -39,7 +39,7 @@
 				description = form.description.trim()
 			);
 
-			location( url = "/admin/index.cfm", addToken = false );
+			location( url = "/admin/index.cfm?dataChanged=true", addToken = false );
 
 		} catch ( any error ) {
 

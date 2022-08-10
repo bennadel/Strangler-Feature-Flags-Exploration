@@ -7,7 +7,7 @@
 	</title>
 </head>
 <frameset cols="50%,50%">
-	<frame src="./test.cfm"></frame>
+	<frame src="./demo.cfm"></frame>
 	<frame src="./admin/index.cfm"></frame>
 </frameset>
 </html>

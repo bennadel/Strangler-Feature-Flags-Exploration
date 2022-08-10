@@ -104,7 +104,7 @@
 					isEnabled = preparedData.isEnabled
 				);
 
-				location( url = "/admin/index.cfm", addToken = false );
+				location( url = "/admin/index.cfm?dataChanged=true", addToken = false );
 
 			break;
 			case "switchRolloutToMulti":
