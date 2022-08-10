@@ -99,15 +99,24 @@ component
 		// make sure that everything is of the expected type and interface. Normally, my
 		// "test" functions wouldn't return data; but, in this case, they are returning
 		// the sanitize data, prepared for persistence.
+		key = validation.testKey( key );
+		name = validation.testName( name );
+		description = validation.testDescription( description );
+		type = validation.testType( type );
+		variants = validation.testVariants( type, variants );
+		rules = validation.testRules( variants, rules );
+		fallthroughVariantRef = validation.testFallthroughVariantRef( variants, fallthroughVariantRef );
+		isEnabled = validation.testIsEnabled( isEnabled );
+
 		gateway.saveFeatureFlag(
-			key = validation.testKey( key ),
-			name = validation.testName( name ),
-			description = validation.testDescription( description ),
-			type = validation.testType( type ),
-			variants = validation.testVariants( type, variants ),
-			rules = validation.testRules( variants, rules ),
-			fallthroughVariantRef = validation.testFallthroughVariantRef( variants, fallthroughVariantRef ),
-			isEnabled = validation.testIsEnabled( isEnabled )
+			key = key,
+			name = name,
+			description = description,
+			type = type,
+			variants = variants,
+			rules = rules,
+			fallthroughVariantRef = fallthroughVariantRef,
+			isEnabled = isEnabled
 		);
 
 	}
