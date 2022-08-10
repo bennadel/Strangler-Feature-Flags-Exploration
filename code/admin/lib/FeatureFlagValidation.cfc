@@ -686,7 +686,7 @@ component
 
 			// NOTE: In earlier versions of Lucee, canonicalizing an empty string would
 			// return NULL. As such, I'm using Elvis operator to always return a string.
-			var cleanedInput = ( canonicalize( input true, true ) ?: "" );
+			var cleanedInput = ( canonicalize( input, true, true ) ?: "" );
 
 			// We don't just want to canonicalize the input, we want to block data that
 			// changes due to the canonicalization process. This way, we can inform the
