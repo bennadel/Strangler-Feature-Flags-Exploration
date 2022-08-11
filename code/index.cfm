@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<title>
-		Testing Feature Flags
+		Strangler: Experimenting With Feature Flags In Lucee CFML
 	</title>
 </head>
 <frameset cols="50%,50%">

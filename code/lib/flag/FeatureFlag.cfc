@@ -5,6 +5,11 @@ component
 
 	/**
 	* I initialize the feature flag with the given properties.
+	* 
+	* CAUTION: This component does not perform any type of validation on the given data.
+	* It assumes that the data in question is simply the reconstructed version of the
+	* sanitized data that has already been validated and managed through an external
+	* administration module.
 	*/
 	public void function init(
 		required string key,
@@ -21,13 +26,10 @@ component
 		variables.name = arguments.name;
 		variables.description = arguments.description;
 		variables.type = arguments.type;
-		variables.variants = [];
-		variables.rules = rules;
-		variables.fallthroughVariantRef = 0;
+		variables.variants = arguments.variants;
+		variables.rules = arguments.rules;
+		variables.fallthroughVariantRef = arguments.fallthroughVariantRef;
 		variables.isEnabled = arguments.isEnabled;
-
-		setVariants( arguments.variants );
-		setFallthroughVariantRef( arguments.fallthroughVariantRef );
 
 	}
 
@@ -46,38 +48,51 @@ component
 
 
 	/**
-	* I get the variant targeted at the given user configuration.
+	* I get the variant response targeted at the given user configuration.
 	*/
 	public struct function getVariant(
 		required string userKey,
 		required struct userProperties
 		) {
 
-		if ( isEnabled ) {
+		if ( ! isEnabled ) {
 
-			for ( var rule in rules ) {
+			return(
+				buildVariantResult(
+					fallthroughVariantRef,
+					"Feature flag not enabled, fall-through variant used."
+				)
+			);
 
-				var variantRef = rule.testUser( userKey, userProperties );
+		}
 
-				if ( variantRef && variants.isDefined( variantRef ) ) {
+		loop
+			index = "local.ruleIndex"
+			value = "local.rule"
+			array = rules
+			{
 
-					return({
-						type: type,
-						ref: variantRef,
-						value: variants[ variantRef ]
-					});
+			var variantRef = rule.testUser( userKey, userProperties );
 
-				}
+			if ( variantRef ) {
+
+				return(
+					buildVariantResult(
+						variantRef,
+						"Feature flag targeting matched on rule #ruleIndex#."
+					)
+				);
 
 			}
 
 		}
 
-		return({
-			type: type,
-			ref: fallthroughVariantRef,
-			value: variants[ fallthroughVariantRef ]
-		});
+		return(
+			buildVariantResult(
+				fallthroughVariantRef,
+				"Feature flag did not target user, fall-through variant used."
+			)
+		);
 
 	}
 
@@ -85,28 +100,22 @@ component
 	// PRIVATE METHODS.
 	// ---
 
-	private void function setFallthroughVariantRef( required numeric newFallthroughVariantRef ) {
+	/**
+	* I build the metadata structure to be used as the targeting result.
+	*/
+	private struct function buildVariantResult(
+		required numeric variantRef,
+		required string reason
+		) {
 
-		if ( ! variants.isDefined( newFallthroughVariantRef ) ) {
-
-			throw( type = "InvalidFallthroughVariantRef" );
-
-		}
-
-		fallthroughVariantRef = newFallthroughVariantRef;
-
-	}
-
-
-	private void function setVariants( required array newVariants ) {
-
-		if ( ! newVariants.len() ) {
-
-			throw( type = "NotEnoughVariants" );
-
-		}
-
-		variants.append( newVariants, true );
+		return({
+			name: name,
+			key: key,
+			type: type,
+			ref: variantRef,
+			value: variants[ variantRef ],
+			reason: reason
+		});
 
 	}
 

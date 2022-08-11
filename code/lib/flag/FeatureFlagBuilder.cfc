@@ -34,7 +34,8 @@ component
 
 
 	/**
-	* I build a FeatureFlag from the given config.
+	* I build a FeatureFlag from the given config. In this case, the "config" is the raw
+	* data that represents the persisted feature flag.
 	*/
 	public any function fromConfig( required struct config ) {
 
@@ -114,7 +115,7 @@ component
 				var operator = new operators.LessThanOperator( rawTest.operation.values );
 			break;
 			case "MatchesRegex":
-				var operator = new operators.MatchesRegexOperator( rawTest.operation.value );
+				var operator = new operators.MatchesRegexOperator( rawTest.operation.values );
 			break;
 			case "NotContains":
 				var operator = new operators.NotContainsOperator( rawTest.operation.values );
@@ -123,7 +124,7 @@ component
 				var operator = new operators.NotEndsWithOperator( rawTest.operation.values );
 			break;
 			case "NotMatchesRegex":
-				var operator = new operators.NotMatchesRegexOperator( rawTest.operation.value );
+				var operator = new operators.NotMatchesRegexOperator( rawTest.operation.values );
 			break;
 			case "NotOneOf":
 				var operator = new operators.NotOneOfOperator( rawTest.operation.values );

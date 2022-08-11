@@ -31,6 +31,8 @@ component
 
 		for ( var test in tests ) {
 
+			// Within a Rule, all of the tests are AND'ed together. As such, if any of the
+			// tests fail, the Rule is short-circuited.
 			if ( ! test.testUser( userKey, userProperties ) ) {
 
 				return( 0 );

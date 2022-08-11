@@ -16,7 +16,7 @@ component
 		"/data": ( this.directory & "../data" ),
 		"/lib": ( this.directory & "lib" ),
 		"/templates": ( this.directory & "templates" ),
-		"/vendor": ( this.directory & "vendor" )
+		"/vendor": ( this.directory & "../vendor" )
 	};
 
 	// ---

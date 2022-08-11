@@ -21,21 +21,29 @@ component
 		required any defaultValue
 		) {
 
-		var index = loader.getFeatureFlags();
+		try {
 
-		// If the feature flag doesn't exist, it may be a developer error; or, it may mean
-		// that we weren't able to load the rules from the underlying storage mechanism.
-		if ( ! index.keyExists( featureKey ) ) {
+			var index = loader.getFeatureFlags();
 
+			// If the feature flag doesn't exist, it may be a developer error; or, it may mean
+			// that we weren't able to load the rules from the underlying storage mechanism.
+			if ( ! index.keyExists( featureKey ) ) {
+
+				return( defaultValue );
+
+			}
+
+			var variant = index[ featureKey ]
+				.getVariant( userKey, userProperties )
+			;
+systemOutput( variant, true );
+			return( variant.value );
+
+		} catch ( any error ) {
+systemOutput( error, true );
 			return( defaultValue );
 
 		}
-
-		var variant = index[ featureKey ]
-			.getVariant( userKey, userProperties )
-		;
-
-		return( variant.value );
 
 	}
 

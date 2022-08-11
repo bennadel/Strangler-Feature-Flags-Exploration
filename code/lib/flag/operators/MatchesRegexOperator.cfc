@@ -4,14 +4,17 @@ component
 	{
 
 	/**
-	* I initialize the operator with the given Java Regular Expression text.
+	* I initialize the operator with the given target values (Java RegEx pattern text).
 	*/
-	public void function init( required string targetValue ) {
+	public void function init( required array targetValues ) {
 
-		variables.targetValue = arguments.targetValue;
-		variables.pattern = createObject( "java", "java.util.regex.Pattern" )
-			.compile( targetValue )
-		;
+		variables.patterns = arguments.targetValues.map(
+			( targetValue ) => {
+
+				return( createObject( "java", "java.util.regex.Pattern" ).compile( toString( targetValue ) ) );
+
+			}
+		);
 
 	}
 
@@ -20,7 +23,7 @@ component
 	// ---
 
 	/**
-	* I test the given value to see if it matches against the target Regular Expression.
+	* I test the given value to see if it matches against the target Regular Expressions.
 	* The test implicitly casts all values to a string.
 	*/
 	public boolean function testValue( required any value ) {
@@ -31,7 +34,17 @@ component
 
 		}
 
-		return( pattern.matcher( toString( value ) ).find() );
+		for ( var pattern in patterns ) {
+
+			if ( pattern.matcher( toString( value ) ).find() ) {
+
+				return( true );
+
+			}
+
+		}
+
+		return( false );
 
 	}
 

@@ -4,11 +4,11 @@ component
 	{
 
 	/**
-	* I initialize the operator with the given Java Regular Expression text.
+	* I initialize the operator with the given target values (Java RegEx pattern text).
 	*/
-	public void function init( required string targetValue ) {
+	public void function init( required array targetValues ) {
 
-		variables.matchesRegexOperator = new MatchesRegexOperator( targetValue );
+		variables.matchesRegexOperator = new MatchesRegexOperator( targetValues );
 
 	}
 

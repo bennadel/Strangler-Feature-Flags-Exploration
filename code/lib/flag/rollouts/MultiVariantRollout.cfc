@@ -65,12 +65,6 @@ component
 
 		}
 
-		if ( indexSize != 100 ) {
-
-			throwPercentageInvalidError()
-
-		}
-
 		return( index );
 
 	}
@@ -100,19 +94,6 @@ component
 		var bucketCount = BigInteger.valueOf( 100 );
 
 		return( checksum.mod( bucketCount ) + 1 );
-
-	}
-
-
-	/**
-	* I throw an error indicating that the distribution total is invalid.
-	*/
-	private void function throwPercentageInvalidError() {
-
-		throw(
-			type = "Strangler.MultiVariantRollout.PercentageInvalid",
-			message = "Multi-variant rollout distribution total does not equal 100."
-		);
 
 	}
 
