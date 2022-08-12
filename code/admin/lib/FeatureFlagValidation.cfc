@@ -464,7 +464,7 @@ component
 
 		return([
 			operator: testRulesXTestsXOperationOperator( operation.operator ),
-			values: testRulesXTestsXOperationValues( operation.values )
+			values: testRulesXTestsXOperationValues( operation.operator, operation.values )
 		]);
 
 	}
@@ -520,7 +520,10 @@ component
 	/**
 	* I test the given operation values.
 	*/
-	public array function testRulesXTestsXOperationValues( required array values ) {
+	public array function testRulesXTestsXOperationValues(
+		required string operator,
+		required array values
+		) {
 
 		values = values.map(
 			( value ) => {
@@ -540,6 +543,37 @@ component
 
 			}
 		);
+
+		// For RegularExpression-based operations, we need to confirm that each test value
+		// can be compiled down to a Java RegEx Pattern instance.
+		if (
+			( operator == "MatchesRegex" ) ||
+			( operator == "NotMatchesRegex" )
+			) {
+
+			for ( var value in values ) {
+
+				try {
+
+					createObject( "java", "java.util.regex.Pattern" )
+						.compile( toString( value ) )
+					;
+
+				} catch ( any error ) {
+
+					throw(
+						type = "FeatureFlag.Rule.Test.Operation.Value.InvalidRegExPattern",
+						message = "FeatureFlag operand cannot be compiled as a Java RegEx pattern.",
+						extendedInfo = serializeJson({
+							value: value
+						})
+					);
+
+				}
+
+			}
+
+		}
 
 		return( values );
 

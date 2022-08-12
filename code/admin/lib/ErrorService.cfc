@@ -151,6 +151,14 @@ component
 					})
 				);
 			break;
+			case "FeatureFlag.Rule.Test.Operation.Value.InvalidRegExPattern":
+				return(
+					as422({
+						type: error.type,
+						message: "Your test value [#metadata.value#] cannot be compiled as a Java Regular Expression. Double-check that you have closing groups (parenthesis) and that you are escaping any special characters."
+					})
+				);
+			break;
 			case "FeatureFlag.Rule.Test.UserProperty.Empty":
 				return(
 					as422({
