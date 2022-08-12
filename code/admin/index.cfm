@@ -26,9 +26,6 @@
 				Targeting Enabled
 			</th>
 			<th>
-				Serving
-			</th>
-			<th>
 				Actions
 			</th>
 		</tr>
@@ -45,14 +42,6 @@
 				</td>
 				<td align="center">
 					#yesNoFormat( featureFlag.isEnabled )#
-				</td>
-				<td align="center">
-					<cfif ( featureFlag.isEnabled && featureFlag.rules.len() )>
-						<em>Targeted vaue</em>
-					<cfelse>
-						<em>Fall-through value:</em>
-						#encodeForHtml( serializeJson( featureFlag.variants[ featureFlag.fallthroughVariantRef ] ) )#
-					</cfif>
 				</td>
 				<td>
 					<a href="/admin/edit-targeting/index.cfm?key=#encodeForUrl( featureFlag.key )#">Targeting</a>,

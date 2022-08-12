@@ -48,6 +48,9 @@ td {
 thead tr {
 	background-color: #f5f5f5 ;
 }
+tbody tr:hover {
+	background-color: #fff785 ;
+}
 
 input,
 button,
