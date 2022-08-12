@@ -14,6 +14,8 @@ The Demo app runs as a `<frameset>` with the Demo on the left and the Admin on t
 
 ![Screenshot of Feature Flag demo](./assets/demo.png)
 
+The **user interface** for this demo leaves **a lot to be desired**. I was trying to avoid going down a rich-client rabbit-hole. If I tried to make the UI "nice", this demo would have immediately become more about Angular than it was about feature flags. As such, configuring a feature flag is somewhat janky. The entire process is driven by form `POST`-backs, using old-school submit buttons (what do you know, traditional web technology still gets the job done). In a real-world scenario, the UI would be _much nicer_, I promise. Please suspend judgement.
+
 ## Running With CommandBox
 
 This demo runs on Lucee CFML using CommandBox. To start the demo, `cd` into this folder and following these steps:
