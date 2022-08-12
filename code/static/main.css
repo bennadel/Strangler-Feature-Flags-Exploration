@@ -1,0 +1,23 @@
+
+html {
+	font-family: "Roboto", sans-serif, monospace ;
+	font-size: 120% ;
+	font-weight: 400 ;
+	line-height: 1.5 ;
+}
+
+table {
+	border-collapse: collapse ;
+	border: 1px solid currentColor ;
+}
+th,
+td {
+	border: 1px solid currentColor ;
+	padding: 9px 12px 9px 12px ;
+}
+thead tr {
+	background-color: #f5f5f5 ;
+}
+tbody tr:hover {
+	background-color: #fff785 ;
+}

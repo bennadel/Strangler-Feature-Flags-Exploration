@@ -1,5 +1,6 @@
 <cfscript>
 
+	// These are the demo users that we will be targeting with feature flags.
 	users = [
 		{ id: 1, name: "Leah Rankin", email: "leah@example.com", role: "admin" },
 		{ id: 2, name: "Ayden Dillon", email: "ayden@example.com", role: "manager" },
@@ -13,6 +14,7 @@
 		{ id: 10, name: "Mihai Sheppard", email: "mihai@acme.com", role: "designer" }
 	];
 
+	// These are the feature flags that we have in our demo-table.
 	operationsKey = "OPERATIONS--log-level";
 	productKey = "product-RAIN-123-cool-feature";
 
@@ -24,7 +26,11 @@
 	<html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
+		<link rel="stylesheet" type="text/css" href="/static/main.css" />
 	</head>
 	<body>
 
@@ -59,6 +65,11 @@
 			<cfloop item="user" array="#users#">
 
 				<cfscript>
+					// NOTE: You always have to provide a DEFAULT value, which will be
+					// used if there are any errors either loading the data or consuming
+					// the data (such as if the given feature flag doesn't exist).
+					// Internally, the getVariant() methods are wrapped in a try/catch and
+					// are guaranteed not to error.
 					operationsVariant = application.strangler.getVariant(
 						featureKey = operationsKey,
 						userKey = user.id,
@@ -103,11 +114,10 @@
 		</tbody>
 		</table>
 
-
 		<!---
 			When the Admin updates the feature flag data, it posts a message over to this
-			demo frame letting us know. When that happens, let's refresh the page
-			automatically in order to bring in the latest targeting rules for our demo.
+			demo frame letting us know about the change. When that happens, let's refresh
+			the page automatically in order to bring in the latest targeting rules.
 		--->
 		<script type="text/javascript">
 

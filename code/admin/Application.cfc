@@ -83,7 +83,7 @@ component
 			application.featureFlagService.saveFeatureFlag(
 				key = "OPERATIONS--log-level",
 				name = "Operations: Log-Level",
-				description = "I determine the lowest log-level that is captured.",
+				description = "I determine the lowest log-level that is captured during the given user's request.",
 				type = "Any",
 				variants = [
 					{
@@ -109,6 +109,21 @@ component
 				],
 				rules = [],
 				fallthroughVariantRef = 5, // ERROR.
+				isEnabled = false
+			);
+
+		}
+
+		if ( ! index.keyExists( "product-RAIN-123-cool-feature" ) ) {
+
+			application.featureFlagService.saveFeatureFlag(
+				key = "product-RAIN-123-cool-feature",
+				name = "Product: RAIN-123 - Cool Feature",
+				description = "I determine if the cool feature is enabled for the given user.",
+				type = "Boolean",
+				variants = [ false, true ],
+				rules = [],
+				fallthroughVariantRef = 1, // False.
 				isEnabled = false
 			);
 
