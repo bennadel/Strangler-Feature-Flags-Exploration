@@ -12,8 +12,7 @@ Both ColdFusion applications load the same data file - a JSON file - that contai
 
 The Demo app runs as a `<frameset>` with the Demo on the left and the Admin on the right:
 
-... demo to be added ...
-
+![Screenshot of Feature Flag demo](./assets/demo.png)
 
 ## Running With CommandBox
 
