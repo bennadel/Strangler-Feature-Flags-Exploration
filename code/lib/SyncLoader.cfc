@@ -19,9 +19,14 @@ component
 
 	/**
 	* I return an index of feature flags (indexed by key).
+	* 
+	* NOTE: For the DEMO, the feature-flags get reloaded and rebuilt in the first call of
+	* this method on EACH REQUEST (notice the CachedWithin setting). In a production app,
+	* you'd want this data to be more persistent since compiling the ColdFusion components
+	* is not "free" of overhead.
 	*/
 	public struct function getFeatureFlags()
-		cacheWithin = "request"
+		cachedWithin = "request"
 		{
 
 		var index = loadData().map(

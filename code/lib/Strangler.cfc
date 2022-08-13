@@ -36,11 +36,11 @@ component
 			var variant = index[ featureKey ]
 				.getVariant( userKey, userProperties )
 			;
-systemOutput( variant, true );
+
 			return( variant.value );
 
 		} catch ( any error ) {
-systemOutput( error, true );
+
 			return( defaultValue );
 
 		}
