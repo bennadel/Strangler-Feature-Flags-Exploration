@@ -18,6 +18,10 @@ The Demo app runs as a `<frameset>` with the Demo on the left and the Admin on t
 
 The **user interface** for this demo leaves **a lot to be desired**. I was trying to avoid going down a thick-client rabbit-hole. If I tried to make the UI "nice", this demo would have immediately become more about Angular than it was about feature flags. As such, configuring a feature flag is somewhat janky. The entire process is [driven by form `POST`-backs, using old-school submit buttons][blog-4296] (what do you know, traditional web technology still gets the job done). In a real-world scenario, the UI would be _much nicer_, I promise. Please suspend judgement.
 
+## Reloading Feature Flags On Each Request
+
+In this demo, the `Strangler.cfc` component is supplied with a "Sync Loader". This data loader _reloads_ and _recompiles_ the feature flag data at the top of each incoming request so that we can immediately see the effects of the targeting changes applied in the `/admin`. This is _not free_ of overhead. In a production app, you'd want to provide a loader that keeps the data cached for a longer period of time (an exercise for the reader).
+
 ## Running With CommandBox
 
 This demo runs on Lucee CFML using CommandBox. To start the demo, `cd` into this folder and following these steps:
