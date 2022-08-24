@@ -86,26 +86,26 @@ component
 				description = "I determine the lowest log-level that is captured during the given user's request.",
 				type = "Any",
 				variants = [
-					{
+					[
 						level: 10,
 						name: "TRACE"
-					},
-					{
+					],
+					[
 						level: 20,
 						name: "DEBUG"
-					},
-					{
+					],
+					[
 						level: 30,
 						name: "INFO"
-					},
-					{
+					],
+					[
 						level: 40,
 						name: "WARN"
-					},
-					{
+					],
+					[
 						level: 50,
 						name: "ERROR"
-					}
+					]
 				],
 				rules = [],
 				fallthroughVariantRef = 5, // ERROR.
