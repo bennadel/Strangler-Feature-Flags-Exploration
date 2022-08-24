@@ -9,15 +9,15 @@
 	// stile providing all the necessary validation to ensure nothing bad happens to the
 	// persisted data; but, there's no "massaging" of inputs.
 
+	apiResponse = {
+		statusText: "OK",
+		statusCode: 200,
+		data: {}
+	};
+
 	try {
 
 		param name="url.action" type="string";
-
-		apiResponse = {
-			statusText: "OK",
-			statusCode: 200,
-			data: {}
-		};
 
 		// --------------------------------------------------------------------------- //
 		// --------------------------------------------------------------------------- //
