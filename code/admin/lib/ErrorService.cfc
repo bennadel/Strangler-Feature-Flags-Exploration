@@ -175,6 +175,14 @@ component
 					})
 				);
 			break;
+			case "FeatureFlag.Variant.IncorrectType":
+				return(
+					as422({
+						type: error.type,
+						message: "The variant value [#metadata.value#] cannot be used within a feature flag of type #metadata.expects#. Please double-check your value; or consider changing the feature flag type."
+					})
+				);
+			break;
 			case "FormValidation":
 				return(
 					as400({

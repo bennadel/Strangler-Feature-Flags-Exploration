@@ -1,0 +1,30 @@
+
+:host {
+	display: flex ;
+}
+
+.text {
+	// NOTE: We're using animation-delay in order to hide the loader initially.
+	// Apparently, people feel like a site is faster if they don't see "spinners" all over
+	// the place. Honestly, this doesn't connect with me, but what-evs, apparently this is
+	// what the kids are doing these days.
+	animation-delay: 500ms ;
+	animation-duration: 150ms ;
+	animation-fill-mode: both ;
+	animation-name: app-loader-enter-animation ;
+	animation-timing-function: ease-in ;
+	background-color: #ffcc56 ;
+	color: #000000 ;
+	flex: 0 0 auto ;
+	font-weight: 700 ;
+	padding: 5px 20px 5px 20px
+}
+
+@keyframes app-loader-enter-animation {
+	from {
+		opacity: 0.0 ;
+	}
+	to {
+		opacity: 1.0 ;
+	}
+}

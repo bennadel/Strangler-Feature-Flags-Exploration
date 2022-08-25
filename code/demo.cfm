@@ -125,7 +125,10 @@
 				"message",
 				function handleMessage( event ) {
 
-					if ( event.origin !== window.top.location.origin ) {
+					if (
+						( event.origin !== window.top.location.origin ) &&
+						( event.origin !== "http://localhost:4200" ) // Local Angular.
+						) {
 
 						return;
 

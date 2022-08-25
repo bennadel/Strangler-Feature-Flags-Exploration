@@ -5,5 +5,10 @@
     "name":"strangler",
     "jvm":{
         "args":"-Dlucee.preserve.case=true"
+    },
+    "web":{
+        "http":{
+            "port":56999
+        }
     }
 }

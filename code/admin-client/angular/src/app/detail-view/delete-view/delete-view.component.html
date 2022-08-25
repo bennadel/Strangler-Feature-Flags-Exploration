@@ -1,0 +1,32 @@
+
+<h2 class="sds-h2">
+	Delete Feature Flag
+</h2>
+
+<app-loader
+	*ngIf="isLoading">
+</app-loader>
+
+<app-error-message *ngIf="errorMessage" [scrollOnRender]="true">
+	{{ errorMessage }}
+</app-error-message>
+
+<form *ngIf="featureFlag" (submit)="deleteFeatureFlag()">
+
+	<p>
+		Are you sure you want to delete the flag:
+		"<strong>{{ featureFlag.key }}</strong>"?
+	</p>
+
+	<div class="sds-form-actions">
+		<button type="submit" class="sds-form-actions__primary">
+			{{ isProcessing ? "Processing..." : "Delete Feature Flag" }}
+		</button>
+		<a
+			[routerLink]="[ '/feature-flag', featureFlag.key, 'targeting' ]"
+			class="sds-form-actions__cancel">
+			Cancel
+		</a>
+	</div>
+
+</form>

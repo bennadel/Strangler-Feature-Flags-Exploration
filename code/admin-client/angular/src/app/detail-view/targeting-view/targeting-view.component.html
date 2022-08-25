@@ -1,0 +1,216 @@
+
+<app-loader
+	*ngIf="isLoading">
+</app-loader>
+
+<ng-template [ngIf]="( ! isLoading )">
+
+	<h2 class="sds-h2">
+		Update Feature Flag Targeting
+	</h2>
+
+	<p>
+		The targeting acts as a "rules engine" to determine which feature flag variants are applied to a given request based on a set of inputs. It is helpful to think of the targeting logic as a "Pure Function". Meaning, all of the data required by the following Rules and Tests must be provided to the Strangler client at the time a feature flag is evaluated.
+	</p>
+
+	<app-error-message *ngIf="errorMessage" [scrollOnRender]="true">
+		{{ errorMessage }}
+	</app-error-message>
+
+	<div *ngIf="featureFlag">
+
+		<h3 class="sds-h3">
+			Basic Targeting
+		</h3>
+
+		<div class="sds-form-entries">
+			<div class="sds-form-entries__item sds-form-entry">
+				<label class="sds-form-entry__label">
+					Fall-through Variant:
+				</label>
+				<div class="sds-form-entry__body">
+					<select [(ngModel)]="form.fallthroughVariantRef" class="sds-select">
+						<option *ngFor="let option of variantRefOptions" [ngValue]="option.value">
+							{{ option.label }}
+						</option>
+					</select>
+				</div>
+			</div>
+			<div class="sds-form-entries__item sds-form-entry">
+				<label class="sds-form-entry__label">
+					Enabled:
+				</label>
+				<div class="sds-form-entry__body">
+					<select [(ngModel)]="form.isEnabled" class="sds-select">
+						<option *ngFor="let option of enabledOptions" [ngValue]="option.value">
+							{{ option.label }}
+						</option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<h3 class="sds-h3">
+			Rules
+		</h3>
+
+		<div *ngFor="let rule of form.rules ; index as ruleIndex" class="rule">
+
+			<div class="rule-header">
+				<h4 class="rule-header__title">
+					Rule {{ ruleIndex + 1 }}
+				</h4>
+
+				<button
+					type="button"
+					(click)="removeRule( ruleIndex )"
+					class="sds-remove-button rule-header__remove">
+					Remove Rule
+				</button>
+			</div>
+
+			<h5 class="sds-visually-hidden">
+				Tests
+			</h5>
+
+			<p *ngIf="( ! rule.tests.length )">
+				CAUTION: At this time, there are no tests. All users will match this rule.
+			</p>
+
+			<div *ngFor="let test of rule.tests ; index as testIndex">
+
+				<p class="sds-flex-bar">
+					<input
+						*ngIf="( test.type === 'UserKey' )"
+						value="Key"
+						readonly
+						class="sds-flex-bar__item sds-input sds-input--tiny"
+					/>
+					<input
+						*ngIf="( test.type === 'UserProperty' )"
+						[(ngModel)]="test.userProperty"
+						class="sds-flex-bar__item sds-input sds-input--tiny"
+					/>
+					<select [(ngModel)]="test.operation.operator" class="sds-flex-bar__item sds-select">
+						<option *ngFor="let option of operatorOptions" [ngValue]="option.value">
+							{{ option.label }}
+						</option>
+					</select>
+
+					<input
+						#newValue
+						type="text"
+						(keydown.Enter)="addValue( test.operation, newValue )"
+						class="sds-flex-bar__item sds-input sds-input--small"
+					/>
+					<button
+						type="button"
+						(click)="addValue( test.operation, newValue )"
+						class="sds-flex-bar__item sds-add-button">
+						Add Value
+					</button>
+
+					<button
+						type="button"
+						(click)="removeTest( rule, testIndex )"
+						class="sds-flex-bar__item sds-remove-button">
+						Remove Test
+					</button>
+				</p>
+
+				<ul *ngIf="test.operation.values.length">
+					<li *ngFor="let value of test.operation.values ; index as valueIndex">
+						{{ value }}
+						&mdash;
+						<button
+							(click)="removeValue( test, valueIndex )"
+							class="sds-remove-button">
+							Remove
+						</button>
+					</li>
+				</ul>
+
+			</div>
+
+			<p class="sds-flex-bar">
+				<button
+					type="button"
+					(click)="addUserKeyTest( rule )"
+					class="sds-flex-bar__item sds-add-button">
+					Add User-Key Test
+				</button>
+				<button
+					type="button"
+					(click)="addUserPropertyTest( rule )"
+					class="sds-flex-bar__item sds-add-button">
+					Add User-Property Test
+				</button>
+			</p>
+
+			<h5 class="sds-visually-hidden">
+				Rollout
+			</h5>
+
+			<ul class="sds-tabs">
+				<li class="sds-tabs__item">
+					<button
+						(click)="switchRuleToSingleRollout( rule )"
+						class="sds-tabs__link"
+						[class.sds-tabs__link--on]="( rule.rollout.type === 'Single' )">
+						Server a Single Variant
+					</button>
+				</li>
+				<li class="sds-tabs__item">
+					<button
+						(click)="switchRuleToMultiRollout( rule )"
+						class="sds-tabs__link"
+						[class.sds-tabs__link--on]="( rule.rollout.type === 'Multi' )">
+						Server a Multiple Variants (%)
+					</button>
+				</li>
+			</ul>
+
+			<p *ngIf="( rule.rollout.type === 'Single' )">
+				<select [(ngModel)]="rule.rollout.variantRef" class="sds-select">
+					<option *ngFor="let option of variantRefOptions" [ngValue]="option.value">
+						{{ option.label }}
+					</option>
+				</select>
+			</p>
+
+			<p *ngIf="( rule.rollout.type === 'Multi' )">
+				<ng-template ngFor let-portion [ngForOf]="rule.rollout.distribution">
+
+					<select [(ngModel)]="portion.percent" class="sds-select">
+						<option *ngFor="let option of percentOptions" [ngValue]="option.value">
+							{{ option.label }}
+						</option>
+					</select>
+					&mdash;
+					{{ stringifiedVariants[ portion.variantRef ] }} <br />
+
+				</ng-template>
+			</p>
+
+		</div>
+
+		<p>
+			<button type="button" (click)="addRule()" class="sds-add-button">
+				Add Rule
+			</button>
+		</p>
+
+		<div class="sds-form-actions">
+			<button type="button" (click)="submitForm()" class="sds-form-actions__primary">
+				{{ isProcessing ? "Processing..." : "Update Feature Flag" }}
+			</button>
+			<a
+				routerLink="/"
+				class="sds-form-actions__cancel">
+				Cancel
+			</a>
+		</div>
+
+	</div>
+
+</ng-template>

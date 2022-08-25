@@ -34,6 +34,33 @@
 		// --------------------------------------------------------------------------- //
 		// --------------------------------------------------------------------------- //
 
+		// In LOCAL DEVELOPMENT, I'm calling the Lucee CFML server from the Angular dev
+		// server. These run under different ports and therefore need to use CORS (Cross-
+		// Origin Resource Sharing) in order to adhere to the browser's security
+		// restrictions. Once the Angular code is compiled and loaded statically, this
+		// shouldn't be necessary since all the code is served from the Lucee server.
+		header
+			name = "Access-Control-Allow-Origin"
+			value = ( requestData.headers.origin ?: "" )
+		;
+		header
+			name = "Access-Control-Allow-Methods"
+			value = "GET, POST, DELETE"
+		;
+		header
+			name = "Access-Control-Allow-Headers"
+			value = "Content-Type"
+		;
+
+		if ( requestData.method == "OPTIONS" ) {
+
+			abort;
+
+		}
+
+		// --------------------------------------------------------------------------- //
+		// --------------------------------------------------------------------------- //
+
 		switch ( url.action ) {
 			case "createFeatureFlag":
 
@@ -143,16 +170,15 @@
 	// ------------------------------------------------------------------------------- //
 	// ------------------------------------------------------------------------------- //
 
-	cfheader(
-		statusText = apiResponse.statusText,
+	header
+		statusText = apiResponse.statusText
 		statusCode = apiResponse.statusCode
-	);
-
+	;
 	// Reset the output buffer and return the API response (JSON).
-	cfcontent(
-		type = "application/json; charset=utf-8",
+	content
+		type = "application/json; charset=utf-8"
 		variable = serializeResponseData( apiResponse.data )
-	);
+	;
 
 	// ------------------------------------------------------------------------------- //
 	// ------------------------------------------------------------------------------- //

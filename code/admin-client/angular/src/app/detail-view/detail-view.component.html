@@ -1,0 +1,54 @@
+
+<app-loader
+	*ngIf="isLoading">
+</app-loader>
+
+<!-- BEGIN: Ready State. -->
+<ng-template [ngIf]="featureFlag">
+
+	<h1 class="sds-h1">
+		{{ featureFlag.name }}
+	</h1>
+
+	<p>
+		<strong>Key:</strong> {{ featureFlag.key }}
+	</p>
+
+	<ul class="sds-tabs sds-tabs--sticky">
+		<li class="sds-tabs__item">
+			<a
+				[routerLink]="[ '/feature-flag', featureFlag.key, 'targeting' ]"
+				routerLinkActive="sds-tabs__link--on"
+				class="sds-tabs__link">
+				Targeting
+			</a>
+		</li>
+		<li class="sds-tabs__item">
+			<a
+				[routerLink]="[ '/feature-flag', featureFlag.key, 'settings' ]"
+				routerLinkActive="sds-tabs__link--on"
+				class="sds-tabs__link">
+				Settings
+			</a>
+		</li>
+		<li class="sds-tabs__item">
+			<a
+				[routerLink]="[ '/feature-flag', featureFlag.key, 'delete' ]"
+				routerLinkActive="sds-tabs__link--on"
+				class="sds-tabs__link">
+				Danger Zone
+			</a>
+		</li>
+		<li class="sds-tabs__item sds-tabs__item--away">
+			<a
+				routerLink="/"
+				class="sds-tabs__link sds-tabs__link--away">
+				View All Feature Flags &rarr;
+			</a>
+		</li>
+	</ul>
+
+	<router-outlet></router-outlet>
+
+</ng-template>
+<!-- END: Ready State. -->

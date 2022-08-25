@@ -1,0 +1,132 @@
+
+<h1 class="sds-h1">
+	Create a New Feature Flag
+</h1>
+
+<app-error-message *ngIf="errorMessage" [scrollOnRender]="true">
+	{{ errorMessage }}
+</app-error-message>
+
+<form (submit)="createFeatureFlag()">
+
+	<div class="sds-form-entries">
+		<div class="sds-form-entries__item sds-form-entry ">
+			<label class="sds-form-entry__label">
+				Name:
+			</label>
+			<div class="sds-form-entry__body">
+				<input
+					type="text"
+					name="name"
+					[(ngModel)]="form.name"
+					maxlength="50"
+					class="sds-input"
+				/>
+			</div>
+		</div>
+		<div class="sds-form-entries__item sds-form-entry ">
+			<label class="sds-form-entry__label">
+				Key:
+			</label>
+			<div class="sds-form-entry__body">
+				<input
+					type="text"
+					name="key"
+					[(ngModel)]="form.key"
+					maxlength="50"
+					class="sds-input"
+				/>
+			</div>
+		</div>
+		<div class="sds-form-entries__item sds-form-entry ">
+			<label class="sds-form-entry__label">
+				Description:
+			</label>
+			<div class="sds-form-entry__body">
+				<input
+					type="text"
+					name="description"
+					[(ngModel)]="form.description"
+					maxlength="300"
+					class="sds-input"
+				/>
+			</div>
+		</div>
+		<div class="sds-form-entries__item sds-form-entry ">
+			<label class="sds-form-entry__label">
+				Type:
+			</label>
+			<div class="sds-form-entry__body">
+				<select name="type" [(ngModel)]="form.selectedTypeOption" class="sds-select">
+					<option *ngFor="let option of typeOptions" [ngValue]="option">
+						{{ option.label }}
+					</option>
+				</select>
+			</div>
+		</div>
+		<div class="sds-form-entries__item sds-form-entry ">
+			<label class="sds-form-entry__label">
+				Variants:
+			</label>
+			<div class="sds-form-entry__body">
+
+				<ol class="variants">
+					<li
+						*ngFor="let variant of form.variants ; index as i"
+						class="variants__item">
+
+						<div class="variant">
+							<input
+								type="text"
+								name="variant_{{ i }}"
+								[(ngModel)]="form.variants[ i ].value"
+								class="sds-input variant__value"
+							/>
+
+							<input
+								id="fallthroughVariantRef_{{ i }}"
+								type="radio"
+								name="fallthroughVariantRef"
+								[(ngModel)]="form.fallthroughVariantRef"
+								[value]="( i + 1 )"
+								class="variant__selection"
+							/>
+
+							<label
+								for="fallthroughVariantRef_{{ i }}"
+								class="variant__label">
+								Fall-through Variant
+							</label>
+
+							<ng-template [ngIf]="( i > 1 )">
+								&mdash;
+								<button
+									type="button"
+									(click)="removeVariant( i )"
+									class="sds-remove-button variant__remove">
+									Remove
+								</button>
+							</ng-template>
+						</div>
+
+					</li>
+				</ol>
+
+				<button type="button" (click)="addVariant()" class="sds-add-button">
+					Add variant
+				</button>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="sds-form-actions">
+		<button type="submit" class="sds-form-actions__primary">
+			{{ isProcessing ? "Processing..." : "Create Feature Flag" }}
+		</button>
+		<a routerLink="/" class="sds-form-actions__cancel">
+			Cancel
+		</a>
+	</div>
+
+</form>

@@ -1,0 +1,62 @@
+
+<app-loader
+	*ngIf="isLoading">
+</app-loader>
+
+<ng-template [ngIf]="( ! isLoading )">
+
+	<h2 class="sds-h2">
+		Update Feature Flag Settings
+	</h2>
+
+	<app-error-message *ngIf="errorMessage" [scrollOnRender]="true">
+		{{ errorMessage }}
+	</app-error-message>
+
+	<form *ngIf="featureFlag" (submit)="submitForm()">
+
+		<div class="sds-form-entries">
+			<div class="sds-form-entries__item sds-form-entry ">
+				<label class="sds-form-entry__label">
+					Name:
+				</label>
+				<div class="sds-form-entry__body">
+					<input
+						type="text"
+						name="name"
+						[(ngModel)]="form.name"
+						maxlength="50"
+						class="sds-input"
+					/>
+				</div>
+			</div>
+			<div class="sds-form-entries__item sds-form-entry ">
+				<label class="sds-form-entry__label">
+					Description:
+				</label>
+				<div class="sds-form-entry__body">
+					<input
+						type="text"
+						name="description"
+						[(ngModel)]="form.description"
+						maxlength="300"
+						class="sds-input"
+					/>
+				</div>
+			</div>
+		</div>
+
+		<div class="sds-form-actions">
+			<button type="submit" class="sds-form-actions__primary">
+				{{ isProcessing ? "Processing..." : "Update Feature Flag" }}
+			</button>
+			<a
+				[routerLink]="[ '/feature-flag', key, 'targeting']"
+				class="sds-form-actions__cancel">
+				Cancel
+			</a>
+		</div>
+
+	</form>
+
+</ng-template>

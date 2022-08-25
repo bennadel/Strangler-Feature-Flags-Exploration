@@ -1,0 +1,26 @@
+
+<h1 class="sds-h1">
+	All Feature Flags
+</h1>
+
+<p>
+	<a routerLink="/create" class="sds-link">Create a Feature Flag</a>
+</p>
+
+<app-loader
+	*ngIf="isLoading">
+</app-loader>
+
+<app-error-message *ngIf="errorMessage" [scrollOnRender]="true">
+	{{ errorMessage }}
+</app-error-message>
+
+<ul *ngIf="featureFlags">
+	<li *ngFor="let featureFlag of featureFlags">
+
+		<a [routerLink]="[ '/feature-flag', featureFlag.key, 'targeting' ]" class="sds-link">
+			{{ featureFlag.name }}
+		</a>
+
+	</li>
+</ul>

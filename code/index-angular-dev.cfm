@@ -8,6 +8,6 @@
 </head>
 <frameset cols="50%,50%">
 	<frame src="./demo.cfm"></frame>
-	<frame src="./admin-client/angular-dist/index.html"></frame>
+	<frame src="http://localhost:4200/"></frame>
 </frameset>
 </html>

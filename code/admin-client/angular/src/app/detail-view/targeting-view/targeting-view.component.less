@@ -1,0 +1,35 @@
+
+:host {
+	display: block ;
+}
+
+.rule {
+	border: 2px solid #666666 ;
+	border-radius: 4px 4px 4px 4px ;
+	margin: 20px 0px 20px 0px ;
+	padding: 20px 20px 20px 20px ;
+
+	> * {
+		&:first-child {
+			margin-top: 0px ;
+		}
+
+		&:last-child {
+			margin-bottom: 0px ;
+		}
+	}
+}
+
+.rule-header {
+	border-bottom: 2px solid #666666 ;
+	display: flex ;
+	padding-bottom: 5px ;
+
+	&__title {
+		margin: 0px 0px 0px 0px ;
+	}
+
+	&__remove {
+		margin-left: auto ;
+	}
+}
