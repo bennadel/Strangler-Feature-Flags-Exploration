@@ -3,6 +3,9 @@
 import { ErrorHandler } from "@angular/core";
 import { Injectable } from "@angular/core";
 
+// Import application modules.
+import { ApiClient } from "~/app/services/api-client.service";
+
 // ----------------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------- //
 
@@ -11,31 +14,36 @@ import { Injectable } from "@angular/core";
 })
 export class ErrorService implements ErrorHandler {
 
+	private apiClient;
+
+	/**
+	* I initialize the API client with the given dependencies.
+	*/
+	constructor( apiClient: ApiClient ) {
+
+		this.apiClient = apiClient;
+
+	}
+
+	// ---
+	// PUBLIC METHODS.
+	// ---
+
 	/**
 	* I attempt to extract the human-friendly error message from the given error. However,
 	* since there are no guarantees as to where in the application this error was thrown,
-	* we will have to do some introspection in order to find the most appropriate error
-	* message property to display.
+	* we will have to do some introspection / type narrowing in order to find the most
+	* appropriate error message property to display.
 	*/
 	public getMessage( error: any ) : string {
 
-		if ( this.isApiClientError( error ) ) {
+		if ( this.apiClient.isApiClientError( error ) ) {
 
 			return( error.data.message );
 
 		}
 
 		return( "Sorry, we could not process your request." );
-
-	}
-
-
-	/**
-	* I determine if the given error LOOKS LIKE an API Client error.
-	*/
-	public isApiClientError( error: any ) : boolean {
-
-		return( !! error?.isApiClientError );
 
 	}
 

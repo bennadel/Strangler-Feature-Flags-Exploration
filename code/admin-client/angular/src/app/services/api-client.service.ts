@@ -47,7 +47,7 @@ export class ApiClient {
 	private httpClient: HttpClient;
 
 	/**
-	* I initialize the API client.
+	* I initialize the API client with the given dependencies.
 	*/
 	constructor( httpClient: HttpClient ) {
 
@@ -63,6 +63,19 @@ export class ApiClient {
 	// ---
 	// PUBLIC METHODS.
 	// ---
+
+	/**
+	* By default, errors in a catch block are of type "any" because it's unclear where in
+	* the callstack the error was thrown. This method provides a runtime check that
+	* guarantees that the given error is an API Client error. When this method returns
+	* "true", TypeScript will narrow the error variable to be of type ResponseError.
+	*/
+	public isApiClientError( error: any ) : error is ResponseError {
+
+		return( error?.isApiClientError === true );
+
+	}
+
 
 	/**
 	* I make an API request with the given configuration.
@@ -87,8 +100,9 @@ export class ApiClient {
 	// ---
 
 	/**
-	* I take the given Observable response and convert it a Promise. An error handler is
-	* attached that converts the HTTP error into a API client error.
+	* I take the given Observable response and convert it a Promise. As part of this
+	* translation, an error handler is attached and will convert the HTTP error into an
+	* API client error (ResponseError).
 	*/
 	private buildResponse<T>(
 		config: RequestConfig,
@@ -113,6 +127,10 @@ export class ApiClient {
 	*/
 	private normalizeError( errorResponse: any ) : ResponseError {
 
+		// Setup the default structure.
+		// --
+		// NOTE: The "isApiClientError" property is a flag used in other parts of the
+		// application to facilitate type guards around error consumption.
 		var error = {
 			isApiClientError: true,
 			data: {
@@ -131,9 +149,9 @@ export class ApiClient {
 		// properties within it. That said, just because this isn't a transport error, it
 		// doesn't mean that this error is actually being returned by our application.
 		if (
+			( errorResponse.error?.strangler === true ) &&
 			( typeof( errorResponse.error?.type ) === "string" ) &&
-			( typeof( errorResponse.error?.message ) === "string" ) &&
-			( typeof( errorResponse.error?.strangler ) === "boolean" )
+			( typeof( errorResponse.error?.message ) === "string" )
 			) {
 
 			error.data.type = errorResponse.error.type;

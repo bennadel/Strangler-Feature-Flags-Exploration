@@ -20,11 +20,11 @@ export namespace FeatureFlags {
 		isEnabled: boolean;
 	}
 
-	export type Type = 
-		| "Any"
-		| "Boolean"
-		| "Numeric"
-		| "String"
+	export type FeatureFlag =
+		| AnyFeatureFlag
+		| BooleanFeatureFlag
+		| NumericFeatureFlag
+		| StringFeatureFlag
 	;
 
 	export interface AnyFeatureFlag extends BaseFeatureFlag {
@@ -47,11 +47,11 @@ export namespace FeatureFlags {
 		variants: string[];
 	}
 
-	export type FeatureFlag =
-		| AnyFeatureFlag
-		| BooleanFeatureFlag
-		| NumericFeatureFlag
-		| StringFeatureFlag
+	export type Type = 
+		| "Any"
+		| "Boolean"
+		| "Numeric"
+		| "String"
 	;
 
 	export interface Rule {
@@ -95,6 +95,11 @@ export namespace FeatureFlags {
 		values: string[];
 	}
 
+	export type Rollout =
+		| SingleRollout
+		| MultiRollout
+	;
+
 	export interface SingleRollout {
 		type: "Single";
 		variantRef: number;
@@ -110,41 +115,30 @@ export namespace FeatureFlags {
 		variantRef: number;
 	}
 
-	export type Rollout =
-		| SingleRollout
-		| MultiRollout
-	;
-
 }
 
 export namespace Events {
 
-	export interface FeatureFlagCreated {
+	interface BaseEvent {
+		data: {
+			key: string;
+		}
+	}
+
+	export interface FeatureFlagCreated extends BaseEvent {
 		type: "FeatureFlagCreated";
-		data: {
-			key: string;
-		}
 	}
 
-	export interface FeatureFlagDeleted {
+	export interface FeatureFlagDeleted extends BaseEvent {
 		type: "FeatureFlagDeleted";
-		data: {
-			key: string;
-		}
 	}
 
-	export interface FeatureFlagSettingsUpdated {
+	export interface FeatureFlagSettingsUpdated extends BaseEvent {
 		type: "FeatureFlagSettingsUpdated";
-		data: {
-			key: string;
-		}
 	}
 
-	export interface FeatureFlagTargetingUpdated {
+	export interface FeatureFlagTargetingUpdated extends BaseEvent {
 		type: "FeatureFlagTargetingUpdated";
-		data: {
-			key: string;
-		}
 	}
 
 	export type All = 
@@ -211,6 +205,9 @@ export class FeatureFlagService {
 
 	public events: Subject<Events.All>;
 
+	/**
+	* I initialize the feature flag service with the given dependencies.
+	*/
 	constructor( apiClient: ApiClient ) {
 
 		this.apiClient = apiClient;
@@ -223,6 +220,9 @@ export class FeatureFlagService {
 	// PUBLIC METHODS.
 	// ---
 
+	/**
+	* I make an API request to create a new feature flag.
+	*/
 	public async createFeatureFlag( config: CreateFeatureFlagConfig ) : Promise<CreateFeatureFlagResponse> {
 
 		var response = await this.apiClient.makeRequest<CreateFeatureFlagResponse>({
@@ -246,6 +246,9 @@ export class FeatureFlagService {
 	}
 
 
+	/**
+	* I make an API request to delete the given feature flag.
+	*/
 	public async deleteFeatureFlag( key: string ) : Promise<DeleteFeatureFlagResponse> {
 
 		var response = await this.apiClient.makeRequest<DeleteFeatureFlagResponse>({
@@ -269,6 +272,9 @@ export class FeatureFlagService {
 	}
 
 
+	/**
+	* I make an API request to get all feature flags.
+	*/
 	public async getAllFeatureFlags() : Promise<GetAllFeatureFlagsResponse> {
 
 		var response = await this.apiClient.makeRequest<GetAllFeatureFlagsResponse>({
@@ -284,6 +290,9 @@ export class FeatureFlagService {
 	}
 
 
+	/**
+	* I make an API request to get the given feature flag.
+	*/
 	public async getFeatureFlag( key: string ) : Promise<FeatureFlagResponse> {
 
 		var response = await this.apiClient.makeRequest<FeatureFlagResponse>({
@@ -300,6 +309,9 @@ export class FeatureFlagService {
 	}
 
 
+	/**
+	* I make an API request to update the given feature flag's base settings.
+	*/
 	public async updateFeatureFlagSettings( config: UpdateFeatureFlagSettingsConfig ) : Promise<UpdateFeatureFlagSettingsResponse> {
 
 		var response = await this.apiClient.makeRequest<UpdateFeatureFlagSettingsResponse>({
@@ -327,6 +339,9 @@ export class FeatureFlagService {
 	}
 
 
+	/**
+	* I make an API request to update the given feature flag's targeting settings.
+	*/
 	public async updateFeatureFlagTargeting( config: UpdateFeatureFlagTargetingConfig ) : Promise<UpdateFeatureFlagTargetingResponse> {
 
 		var response = await this.apiClient.makeRequest<UpdateFeatureFlagTargetingResponse>({
