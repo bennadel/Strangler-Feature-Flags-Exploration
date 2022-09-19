@@ -14,12 +14,10 @@ import { environment } from "~/environments/environment";
 export interface RequestConfig {
 	method: "get" | "post" | "delete";
 	url: string,
-	urlParams?: UrlParams;
+	urlParams?: {
+		[ param: string ]: string | number | boolean;
+	};
 	body?: any;
-}
-
-export interface UrlParams {
-	[ param: string ]: string | number | boolean;
 }
 
 export interface ResponseError {
@@ -130,7 +128,7 @@ export class ApiClient {
 		// Setup the default structure.
 		// --
 		// NOTE: The "isApiClientError" property is a flag used in other parts of the
-		// application to facilitate type guards around error consumption.
+		// application to facilitate type guards, type narrowing, and error consumption.
 		var error = {
 			isApiClientError: true,
 			data: {
@@ -158,8 +156,9 @@ export class ApiClient {
 			error.data.message = errorResponse.error.message;
 
 		// If the error data has any other shape, it means that an unexpected error
-		// occurred on the server (or somewhere in transit). Let's pass that raw error
-		// through as the rootCause, using the default error structure.
+		// occurred on the server (or somewhere in transit, such as at the CDN, Ingress
+		// Proxy, Load Balancer, etc). Let's pass that raw error through as the rootCause,
+		// using the default error structure.
 		} else {
 
 			error.data.rootCause = errorResponse.error;

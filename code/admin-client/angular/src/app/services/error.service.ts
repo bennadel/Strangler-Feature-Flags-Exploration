@@ -37,6 +37,8 @@ export class ErrorService implements ErrorHandler {
 	*/
 	public getMessage( error: any ) : string {
 
+		// If this is an API Client error, the embedded message is trusted and can be
+		// rendered for the user.
 		if ( this.apiClient.isApiClientError( error ) ) {
 
 			return( error.data.message );
